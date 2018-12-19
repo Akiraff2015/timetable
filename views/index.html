@@ -12,7 +12,8 @@
     <script src="../app/app.js"></script>
     <script src="../app/factory/scheduleService.factory.js"></script>
     <script src="../app/controller/main.controller.js"></script>
-    <script src="../app/controller/editSchedule.controller.js"></script>
+    <script src="../app/edit_schedule/editSchedule.controller.js"></script>
+    <script src="../app/edit_schedule/components/editSchedule.component.js"></script>
     <!--<script-->
             <!--src="https://code.jquery.com/jquery-3.3.1.slim.js"-->
             <!--integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA="-->
@@ -34,135 +35,8 @@
 </head>
 
 <body ng-app="rootApp">
-    <div class="container">
-        <h1>Schedule</h1>
-        <div ng-controller="MainController">
-            <table class="table table-bordered">
-                <thead class="text-center">
-                    <tr ng-repeat="days in schedule">
-                        <td ng-repeat="day in days.timetable">
-                            <b>{[ day.day ]}</b> <br>
-                            {[ day.date ]}
-                        </td>
-                    </tr>
-                </thead>
-
-                <tbody class="text-center">
-                    <tr ng-repeat="info in schedule">
-                        <td ng-class="{'timetable-day-off': day.dayOff}"  ng-repeat="day in info.timetable">
-                            <div ng-if="$index == 0">
-                                {[ info.name ]}
-                            </div>
-
-                            <div ng-if="$index > 0">
-                                <div ng-show="day.dayOff">
-                                    OFF
-                                </div>
-
-                                <div ng-show="!day.dayOff">
-                                    {[ day.startTime[0] ]} — {[ day.endTime[0] ]} <br>
-                                    <div ng-show="day.splitShift">
-                                        {[ day.startTime[1] ]} — {[ day.endTime[1] ]}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div ng-controller="EditScheduleController">
-            <h1>Form</h1>
-            <h4>Currently editing: Akira Fukushima</h4>
-
-            <table class="table table-bordered">
-                <thead>
-                <tr class="text-center">
-                    <td ng-repeat="day in editSchedule.timetable">
-                        <b>{[day.day]}</b> <br> {[day.date]}
-                    </td>
-                </tr>
-                </thead>
-
-                <tbody class="text-center">
-                <tr>
-                    <td ng-repeat="day in editSchedule.timetable">
-                        <div ng-show="false">
-                            <div class="row">
-                                <div class="col-md-6">Start</div>
-                                <div class="col-md-6">End</div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input ng-model="day[$index].startTime[0]" class="form-control">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <input ng-model="day[$index].endTime[0]" class="form-control">
-                                </div>
-                            </div>
-
-                            <div ng-show="!hideSplitShift[0]">
-                                <div class="row">
-                                    <div class="col-md-6">Start</div>
-                                    <div class="col-md-6">End</div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input ng-model="day[$index].startTime[1]" class="form-control">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input ng-model="day[$index].endTime[1]" class="form-control">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div ng-show="hideSplitShift[$index]" class="col-md-12">
-                                    <div class="btn-group">
-                                        <div ng-click="toggleShift($index)" class="btn btn-md btn-primary">
-                                            <span class="glyphicon glyphicon-plus-sign"></span>
-                                        </div>
-
-                                        <div class="btn btn-md btn-success">
-                                            <span ng-click="updateSchedule()" class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div ng-show="!hideSplitShift[$index]" class="col-md-12">
-                                    <div class="btn-group">
-                                        <div ng-click="toggleShift($index)" class="btn btn-md btn-danger">
-                                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                        </div>
-
-                                        <div class="btn btn-md btn-success">
-                                            <span ng-click="updateSchedule()" class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div ng-show="true">
-                            <div class="row">
-                                {[ day.startTime[0] ]} — {[ day.endTime[0] ]} <br>
-                                {[ day.startTime[1] ]} — {[ day.endTime[1] ]}
-                            </div>
-
-                            <div class="row">
-                                <div class="btn-group">
-                                    <div class="btn btn-primary">Edit</div>
-                                    <div class="btn btn-danger">Day Off</div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="container" ng-controller="EditScheduleController">
+        <edit-schedule></edit-schedule>
     </div>
 </body>
 </html>
