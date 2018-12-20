@@ -1,12 +1,20 @@
+<h3>Currently editing: {[ schedule.name ]}</h3>
 <table class="table table-bordered">
     <tr ng-repeat="day in schedule.timetable">
-        <td>{[ day.day ]} <br> {[ day.date ]}</td>
+        <td>
+            <div>{[ day.day ]} <br> {[ day.date ]}</div>
+            <div ng-click="toggleEdit($index)" class="btn btn-danger">Edit</div>
+        </td>
 
         <td>
-            {[ day.startTime[0] ]} - {[ day.endTime[0] ]} <br>
-            {[ day.startTime[1] ]} - {[ day.endTime[1] ]} <br>
+            <div ng-show="!day.edit">
+                {[ day.startTime[0] ]} - {[ day.endTime[0] ]} <br>
+                {[ day.startTime[1] ]} - {[ day.endTime[1] ]}
+            </div>
 
-            <edit-button ng-click="myFunc($index)"></edit-button>
+            <div ng-show="day.edit">
+                <edit-form></edit-form>
+            </div>
         </td>
     </tr>
 </table>

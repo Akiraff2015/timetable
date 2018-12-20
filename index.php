@@ -11,6 +11,7 @@ $app = new Slim\App([
 
 $container = $app->getContainer();
 
+// Configure view
 $container['view'] = function($container) {
     $view = new \Slim\Views\Twig('./views', []);
 
@@ -21,11 +22,15 @@ $container['view'] = function($container) {
     return $view;
 };
 
-$app->get('/', function ($request, $response, $args) {
+// Configure database
+$db = new PDO("mysql:host=localhost;dbname=schedule", 'root', '');
+
+$app->get('/', function ($request, $response, $args) use ($app) {
     return $this->view->render($response, 'index.html', []);
 });
 
-$app->get('/api/v1/name/john', function($request, $response, $args) {
+// TODO: testing database
+$app->get('/test', function($req, $res, $args) use ($app, $db) {
     $arr = array(
         "name" => "John Doe",
         "timetable" => array(
@@ -35,7 +40,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "TUE",
                 "date" => "25 Dec, 2018",
@@ -43,7 +49,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "WED",
                 "date" => "26 Dec, 2018",
@@ -51,7 +58,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "THU",
                 "date" => "27 Dec, 2018",
@@ -59,7 +67,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "FRI",
                 "date" => "28 Dec, 2018",
@@ -67,7 +76,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "SAT",
                 "date" => "29 Dec, 2018",
@@ -75,7 +85,8 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true),
+                "TBA" => true,
+                "edit" => false),
 
             array("day" => "SUN",
                 "date" => "30 Dec, 2018",
@@ -83,11 +94,110 @@ $app->get('/api/v1/name/john', function($request, $response, $args) {
                 "endTime" => array("00:00", "00:00"),
                 "dayOff" => true,
                 "splitShift" => true,
-                "TBA" => true)
+                "TBA" => true,
+                "edit" => false)
         )
     );
-    return $response->withJson($arr, 201);
+
+    $time_range = array(
+      "start_time" => $arr["timetable"][0]["date"],
+      "end_time" => $arr["timetable"][6]["date"]
+    );
+
+    $json_schedule = json_encode($arr);
+    $json_time_range = json_encode($time_range);
+
+    try {
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = $db->prepare("INSERT INTO timetable (data, date_range) VALUES (:json_schedule, :json_time_range)");
+
+        $sql->execute(array(
+            ':json_schedule' => $json_schedule,
+            ':json_time_range' => $json_time_range
+        ));
+
+        return $res->withStatus(302)->withHeader('Location', '/');
+
+    } catch(PDOException $e) {
+        return $res->withJson(array(
+            "status" => 500,
+            "message" => "Oops! Error in connecting to database. Here is more info: " . $e->getMessage()
+        ));
+    }
+});
+
+$app->get('/api/v1/name/john', function($req, $res, $args) {
+    $arr = array(
+        "name" => "John Doe",
+        "timetable" => array(
+            array("day" => "MON",
+                "date" => "24 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "TUE",
+                "date" => "25 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "WED",
+                "date" => "26 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "THU",
+                "date" => "27 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "FRI",
+                "date" => "28 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "SAT",
+                "date" => "29 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false),
+
+            array("day" => "SUN",
+                "date" => "30 Dec, 2018",
+                "startTime" => array("00:00", "00:00"),
+                "endTime" => array("00:00", "00:00"),
+                "dayOff" => true,
+                "splitShift" => true,
+                "TBA" => true,
+                "edit" => false)
+        )
+    );
+    return $res->withJson($arr, 201);
 });
 
 // Run app
 $app->run();
+
+?>

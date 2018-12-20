@@ -4,12 +4,12 @@ rootApp.component('editSchedule', {
         // GET response schedule
         $scope.schedule = ScheduleService.getSchedule().then(res => $scope.schedule = res.data);
 
-        $scope.myFunc = function(i) {
-            console.log(i);
+        $scope.toggleEdit = function(i) {
+            $scope.schedule.timetable[i].edit = !$scope.schedule.timetable[i].edit;
         }
     }
 });
 
-rootApp.component('editButton', {
-   templateUrl: './app/edit_schedule/components/editTable.html'
+rootApp.component('editForm', {
+   templateUrl: './app/edit_schedule/components/editForm.html'
 });
