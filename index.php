@@ -29,7 +29,25 @@ $app->get('/', function ($request, $response, $args) use ($app) {
     return $this->view->render($response, 'index.html', []);
 });
 
-// TODO: testing database
+// TODO: testing database (retrieving data)
+$app->get('/getdata', function($req, $res, $args) use ($app, $db) {
+    try {
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = $db->query("SELECT data, date_range FROM timetable WHERE id = 1 LIMIT 1")->fetch();
+
+        $convert_to_json = json_decode($sql['data'], true);
+
+        return $res->withJson($convert_to_json);
+
+    } catch (PDOException $e) {
+        return $res->withJson(array(
+            "status" => 500,
+            "message" => "Oops! Error in the database. Here is more info: " . $e->getMessage()
+        ));
+    }
+});
+
+// TODO: testing database (saving data). Need to change to POST request.
 $app->get('/test', function($req, $res, $args) use ($app, $db) {
     $arr = array(
         "name" => "John Doe",
@@ -199,5 +217,3 @@ $app->get('/api/v1/name/john', function($req, $res, $args) {
 
 // Run app
 $app->run();
-
-?>
